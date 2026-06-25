@@ -4,11 +4,16 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     let _command = &args[1];
-    let file_path = &args[2];
+    let directory = &args[2];
 
-    let source = fs::read_to_string(file_path).expect("cannot read file");
+    for file in fs::read_dir(directory).unwrap() {
+        let file = file.unwrap();
+        let file_path = file.path();
 
-    print_report(source.as_str());
+        let source = fs::read_to_string(file_path).expect("cannot read file");
+
+        print_report(source.as_str());
+    }
 }
 
 fn print_report(source: &str) {
