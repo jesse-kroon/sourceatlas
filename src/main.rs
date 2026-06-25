@@ -1,13 +1,19 @@
-fn main() {
-    let source = "
-        fn main() {
-            // TODO: improve this.
-            println!(\"Hello\");
-        }
-    ";
+use std::{env, fs};
 
-    println!("Repo Lens report");
-    println!("----------------");
+fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    let _command = &args[1];
+    let file_path = &args[2];
+
+    let source = fs::read_to_string(file_path).expect("cannot read file");
+
+    print_report(source.as_str());
+}
+
+fn print_report(source: &str) {
+    println!("REPOLENS");
+    println!("--------");
     println!("total lines: {}", count_file_lines(source));
     println!("total characters: {}", count_file_characters(source));
     println!(
@@ -24,15 +30,15 @@ fn count_file_lines(source: &str) -> usize {
 }
 
 fn count_file_characters(source: &str) -> usize {
-    source.chars().filter(|char| char != &' ').count()
-}
-
-fn count_file_blank_lines(source: &str) -> usize {
-    source.lines().filter(|line| line.trim().len() == 0).count()
+    source.chars().filter(|char| !char.is_whitespace()).count()
 }
 
 fn count_file_non_blank_lines(source: &str) -> usize {
-    count_file_lines(source) - count_file_blank_lines(source)
+    source.lines().filter(|line| !line.is_empty()).count()
+}
+
+fn count_file_blank_lines(source: &str) -> usize {
+    source.lines().filter(|line| line.is_empty()).count()
 }
 
 fn count_file_functions(source: &str) -> usize {
