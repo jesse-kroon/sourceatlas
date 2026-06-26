@@ -23,14 +23,15 @@ fn main() {
         process::exit(1)
     });
 
-    let mut report = Report::new();
-
     match config.command {
-        Command::Scan => scan_directory(Path::new(&config.file_path), &mut report),
+        Command::Scan { directory } => {
+            let mut report = Report::new();
+            scan_directory(Path::new(&directory), &mut report);
+            report.generate();
+            report.print();
+        }
+        Command::Help => println!("You won't get any help here"),
     }
-
-    report.generate();
-    report.print();
 }
 
 fn scan_directory(directory: &Path, report: &mut Report) {
@@ -52,20 +53,23 @@ fn scan_directory(directory: &Path, report: &mut Report) {
 
         let path = entry.path();
         if path.is_dir() {
-            report.total_directories += 1;
+            report.add_directory();
             scan_directory(&path, report);
             continue;
         }
 
         if path.is_file() {
-            let file = match fs::read_to_string(&path) {
+            let source = match fs::read_to_string(&path) {
                 Ok(file) => file,
                 Err(err) => {
                     eprintln!("Skipping {}: {err}", path.display());
                     continue;
                 }
             };
-            report.add_file(FileStats::new(&file));
+            report.add_file(FileStats::new(&source));
         }
+
+        report.generate();
+        report.print();
     }
 }

@@ -1,38 +1,33 @@
 use crate::file_stats::FileStats;
 
+#[derive(Default)]
 pub struct Report {
     files: Vec<FileStats>,
-    pub total_files: usize,
-    pub total_directories: usize,
-    pub total_lines: usize,
-    pub total_characters: usize,
-    pub total_blank_lines: usize,
-    pub total_non_blank_lines: usize,
-    pub total_functions: usize,
-    pub total_todos: usize,
+    total_directories: usize,
+    total_files: usize,
+    total_lines: usize,
+    total_characters: usize,
+    total_blank_lines: usize,
+    total_non_blank_lines: usize,
+    total_functions: usize,
+    total_todos: usize,
 }
 
 impl Report {
     pub fn new() -> Self {
-        Self {
-            files: Vec::new(),
-            total_directories: 0,
-            total_files: 0,
-            total_lines: 0,
-            total_characters: 0,
-            total_blank_lines: 0,
-            total_non_blank_lines: 0,
-            total_functions: 0,
-            total_todos: 0,
-        }
+        Self::default()
     }
 
     pub fn add_file(&mut self, file: FileStats) {
         self.files.push(file);
     }
 
+    pub fn add_directory(&mut self) {
+        self.total_directories += 1;
+    }
+
     pub fn generate(&mut self) {
-        self.total_files += self.files.iter().count();
+        self.total_files = self.files.len();
         self.total_lines = 0;
         self.total_characters = 0;
         self.total_blank_lines = 0;
@@ -50,7 +45,7 @@ impl Report {
         }
     }
 
-    pub fn print(self) {
+    pub fn print(&self) {
         println!("REPOLENS");
         println!("--------");
         println!("total directories: {}", self.total_directories);
