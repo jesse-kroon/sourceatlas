@@ -3,6 +3,7 @@ use crate::file_stats::FileStats;
 pub struct Report {
     files: Vec<FileStats>,
     pub total_files: usize,
+    pub total_directories: usize,
     pub total_lines: usize,
     pub total_characters: usize,
     pub total_blank_lines: usize,
@@ -15,6 +16,7 @@ impl Report {
     pub fn new() -> Self {
         Self {
             files: Vec::new(),
+            total_directories: 0,
             total_files: 0,
             total_lines: 0,
             total_characters: 0,
@@ -51,6 +53,7 @@ impl Report {
     pub fn print(self) {
         println!("REPOLENS");
         println!("--------");
+        println!("total directories: {}", self.total_directories);
         println!("total files: {}", self.total_files);
         println!("total lines: {}", self.total_lines);
         println!("total characters: {}", self.total_characters);

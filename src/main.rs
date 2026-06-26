@@ -9,6 +9,7 @@ use report::Report;
 use std::{
     env,
     fs::{self},
+    path::Path,
     process,
 };
 
@@ -22,34 +23,49 @@ fn main() {
         process::exit(1)
     });
 
-    match config.command {
-        Command::Scan => scan_directory(&config.file_path),
-    }
-}
-
-fn scan_directory(directory: &str) {
-    println!("Scanning {}", directory);
     let mut report = Report::new();
 
-    let entries = fs::read_dir(directory).unwrap_or_else(|err| {
-        eprintln!("{err}");
-        process::exit(1)
-    });
+    match config.command {
+        Command::Scan => scan_directory(Path::new(&config.file_path), &mut report),
+    }
+
+    report.generate();
+    report.print();
+}
+
+fn scan_directory(directory: &Path, report: &mut Report) {
+    println!("Scanning {}", directory.display());
+
+    let entries = match fs::read_dir(directory) {
+        Ok(entries) => entries,
+        Err(err) => {
+            eprintln!("Skipping directory {}: {err}", directory.display());
+            return;
+        }
+    };
 
     for entry in entries {
         let entry = entry.unwrap_or_else(|err| {
             eprintln!("{err}");
             process::exit(1);
         });
-        let file_path = entry.path();
-        let file = fs::read_to_string(file_path).unwrap_or_else(|err| {
-            eprintln!("{err}");
-            process::exit(1)
-        });
 
-        report.add_file(FileStats::new(&file));
+        let path = entry.path();
+        if path.is_dir() {
+            report.total_directories += 1;
+            scan_directory(&path, report);
+            continue;
+        }
+
+        if path.is_file() {
+            let file = match fs::read_to_string(&path) {
+                Ok(file) => file,
+                Err(err) => {
+                    eprintln!("Skipping {}: {err}", path.display());
+                    continue;
+                }
+            };
+            report.add_file(FileStats::new(&file));
+        }
     }
-
-    report.generate();
-    report.print();
 }
