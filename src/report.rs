@@ -4,7 +4,9 @@ use crate::file_stats::FileStats;
 pub struct Report {
     files: Vec<FileStats>,
     total_directories: usize,
-    total_files: usize,
+    total_files_found: usize,
+    total_files_analyzed: usize,
+    total_files_skipped: usize,
     total_lines: usize,
     total_characters: usize,
     total_blank_lines: usize,
@@ -22,18 +24,21 @@ impl Report {
         self.files.push(file);
     }
 
-    pub fn add_directory(&mut self) {
+    pub fn record_directory_found(&mut self) {
         self.total_directories += 1;
     }
 
+    pub fn record_file_found(&mut self) {
+        self.total_files_found += 1;
+    }
+
+    pub fn record_skipped_file(&mut self) {
+        self.total_files_skipped += 1
+    }
+
     pub fn generate(&mut self) {
-        self.total_files = self.files.len();
-        self.total_lines = 0;
-        self.total_characters = 0;
-        self.total_blank_lines = 0;
-        self.total_non_blank_lines = 0;
-        self.total_functions = 0;
-        self.total_todos = 0;
+        Self::default();
+        self.total_files_analyzed = self.files.len();
 
         for file in &self.files {
             self.total_lines += file.total_lines;
@@ -46,10 +51,21 @@ impl Report {
     }
 
     pub fn print(&self) {
-        println!("REPOLENS");
+        println!("----------");
+        println!("|REPOLENS|");
+        println!("----------");
+        println!("");
+
+        println!("DIRECTORIES");
         println!("--------");
         println!("total directories: {}", self.total_directories);
-        println!("total files: {}", self.total_files);
+        println!("");
+
+        println!("FILES");
+        println!("--------");
+        println!("total files found: {}", self.total_files_found);
+        println!("total files analyzed: {}", self.total_files_analyzed);
+        println!("total files skipped: {}", self.total_files_skipped);
         println!("total lines: {}", self.total_lines);
         println!("total characters: {}", self.total_characters);
         println!("total non-blank lines: {}", self.total_non_blank_lines);

@@ -53,23 +53,20 @@ fn scan_directory(directory: &Path, report: &mut Report) {
 
         let path = entry.path();
         if path.is_dir() {
-            report.add_directory();
+            report.record_directory_found();
             scan_directory(&path, report);
             continue;
         }
 
         if path.is_file() {
-            let source = match fs::read_to_string(&path) {
-                Ok(file) => file,
-                Err(err) => {
-                    eprintln!("Skipping {}: {err}", path.display());
+            report.record_file_found();
+            match fs::read_to_string(&path) {
+                Ok(source) => report.add_file(FileStats::new(&source)),
+                Err(_) => {
+                    report.record_skipped_file();
                     continue;
                 }
             };
-            report.add_file(FileStats::new(&source));
         }
-
-        report.generate();
-        report.print();
     }
 }

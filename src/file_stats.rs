@@ -11,7 +11,7 @@ impl FileStats {
     pub fn new(source: &str) -> Self {
         Self {
             total_lines: count_file_lines(source),
-            total_characters: count_file_characters(source),
+            total_characters: count_file_non_whitespace_characters(source),
             total_blank_lines: count_file_blank_lines(source),
             total_non_blank_lines: count_file_non_blank_lines(source),
             total_functions: count_file_functions(source),
@@ -24,7 +24,7 @@ fn count_file_lines(source: &str) -> usize {
     source.lines().count()
 }
 
-fn count_file_characters(source: &str) -> usize {
+fn count_file_non_whitespace_characters(source: &str) -> usize {
     source.chars().filter(|char| !char.is_whitespace()).count()
 }
 
@@ -51,4 +51,40 @@ fn count_file_functions(source: &str) -> usize {
 
 fn count_file_todos(source: &str) -> usize {
     source.to_ascii_lowercase().matches("todo").count()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TEST_SOURCE: &str = r#"fn main() {
+        let first_name = "John";
+        // TODO: add last name
+
+    }"#;
+
+    #[test]
+    fn counts_lines() {
+        assert_eq!(5, count_file_lines(TEST_SOURCE))
+    }
+
+    #[test]
+    fn counts_blank_lines() {
+        assert_eq!(1, count_file_blank_lines(TEST_SOURCE))
+    }
+
+    #[test]
+    fn counts_non_whitespace_characters() {
+        assert_eq!(49, count_file_non_whitespace_characters(TEST_SOURCE))
+    }
+
+    #[test]
+    fn counts_todos() {
+        assert_eq!(1, count_file_todos(TEST_SOURCE))
+    }
+
+    #[test]
+    fn counts_functions() {
+        assert_eq!(1, count_file_functions(TEST_SOURCE))
+    }
 }
