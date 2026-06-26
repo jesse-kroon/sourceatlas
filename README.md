@@ -93,7 +93,7 @@ TODO comments:    1
 Functions:        1
 Concepts used
 
-This applies:
+This applies:String::from(num)
 
 variables;
 mutability;
