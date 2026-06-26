@@ -1,4 +1,9 @@
-use std::{env, fs};
+use std::{
+    env,
+    error::Error,
+    fs::{self, ReadDir},
+    process,
+};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -6,10 +11,17 @@ fn main() {
     let _command = &args[1];
     let directory = &args[2];
 
-    for file in fs::read_dir(directory).unwrap() {
-        let file = file.unwrap();
-        let file_path = file.path();
+    let entries = get_directory_entries(directory).unwrap_or_else(|err| {
+        eprintln!("{err}");
+        process::exit(1);
+    });
 
+    for entry in entries {
+        let entry = entry.unwrap_or_else(|err| {
+            eprintln!("{err}");
+            process::exit(1);
+        });
+        let file_path = entry.path();
         let source = fs::read_to_string(file_path).expect("cannot read file");
 
         print_report(source.as_str());
@@ -55,4 +67,10 @@ fn count_file_todos(source: &str) -> usize {
         .lines()
         .filter(|line| line.to_lowercase().contains("todo"))
         .count()
+}
+
+fn get_directory_entries(directory: &str) -> Result<ReadDir, Box<dyn Error>> {
+    let entries = fs::read_dir(directory)?;
+
+    Ok(entries)
 }
