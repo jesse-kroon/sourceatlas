@@ -1,6 +1,9 @@
+mod command;
+mod config;
 mod file_stats;
 mod report;
 
+use config::Config;
 use file_stats::FileStats;
 use report::Report;
 use std::{
@@ -9,17 +12,23 @@ use std::{
     process,
 };
 
+use crate::command::Command;
+
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    if args.len() != 3 {
-        eprintln!("Usage: repolens <command> <directory>");
+    let config = Config::parse(&args).unwrap_or_else(|err| {
+        eprintln!("{err}");
         process::exit(1)
+    });
+
+    match config.command {
+        Command::Scan => scan_directory(&config.file_path),
     }
+}
 
-    let _command = &args[1];
-    let directory = &args[2];
-
+fn scan_directory(directory: &str) {
+    println!("Scanning {}", directory);
     let mut report = Report::new();
 
     let entries = fs::read_dir(directory).unwrap_or_else(|err| {
