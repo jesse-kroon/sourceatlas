@@ -33,26 +33,14 @@ fn main() {
             process::exit(1);
         });
         let file_path = entry.path();
-        let source = fs::read_to_string(file_path).unwrap_or_else(|err| {
+        let file = fs::read_to_string(file_path).unwrap_or_else(|err| {
             eprintln!("{err}");
             process::exit(1)
         });
 
-        report.add_file(FileStats::new(&source));
+        report.add_file(FileStats::new(&file));
     }
 
     report.generate();
-    print_report(&report);
-}
-
-fn print_report(report: &Report) {
-    println!("REPOLENS");
-    println!("--------");
-    println!("total files: {}", report.total_files);
-    println!("total lines: {}", report.total_lines);
-    println!("total characters: {}", report.total_characters);
-    println!("total non-blank lines: {}", report.total_non_blank_lines);
-    println!("total blank lines: {}", report.total_blank_lines);
-    println!("total functions: {}", report.total_functions);
-    println!("total TODO's: {}", report.total_todos);
+    report.print();
 }

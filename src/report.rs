@@ -47,4 +47,16 @@ impl Report {
             self.total_todos += file.total_todos;
         }
     }
+
+    pub fn print(self) {
+        println!("REPOLENS");
+        println!("--------");
+        println!("total files: {}", self.total_files);
+        println!("total lines: {}", self.total_lines);
+        println!("total characters: {}", self.total_characters);
+        println!("total non-blank lines: {}", self.total_non_blank_lines);
+        println!("total blank lines: {}", self.total_blank_lines);
+        println!("total functions: {}", self.total_functions);
+        println!("total TODO's: {}", self.total_todos);
+    }
 }
