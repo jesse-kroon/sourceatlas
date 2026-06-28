@@ -70,3 +70,56 @@ fn scan_directory(directory: &Path, report: &mut Report) {
         }
     }
 }
+
+mod tests {
+    use std::{
+        fs::{self, DirBuilder},
+        path::Path,
+    };
+
+    use tempfile::tempdir;
+
+    use crate::{report::Report, scan_directory};
+
+    #[test]
+    fn binary_file_is_skipped_but_is_counted() {
+        let dir_path = "./tmp/";
+        let mut builder = DirBuilder::new();
+        builder.recursive(true).create(dir_path).unwrap();
+        fs::write(dir_path.to_owned() + "/image1.png", [0xFF, 0xD7, 0xFF]).unwrap();
+        fs::write(dir_path.to_owned() + "/image2.png", [0xFF, 0xD7, 0xFF]).unwrap();
+        fs::write(dir_path.to_owned() + "/image3.png", [0xFF, 0xD7, 0xFF]).unwrap();
+
+        let mut report = Report::new();
+        scan_directory(Path::new(dir_path), &mut report);
+        report.generate();
+
+        assert_eq!(report.total_files(), 3);
+        assert_eq!(report.total_files_skipped(), 3);
+        assert_eq!(report.total_files_analyzed(), 0);
+
+        fs::remove_dir_all(dir_path).unwrap();
+    }
+
+    #[test]
+    fn recursively_scans_directories() {
+        let temp_dir = tempdir().unwrap();
+        let dir_path = &temp_dir.path();
+        let lib_dir = dir_path.join("lib");
+        fs::create_dir(dir_path.join("lib")).unwrap();
+
+        fs::write(dir_path.join("main.rs"), "fn main() {}").unwrap();
+        fs::write(dir_path.join("image.png"), [0xFF, 0xDD, 0xFF]).unwrap();
+        fs::write(dir_path.join("/lib/lib.rs"), "fn main() {}").unwrap();
+
+        let mut report = Report::new();
+        scan_directory(Path::new(dir_path), &mut report);
+        report.generate();
+
+        assert_eq!(report.total_files(), 3);
+        assert_eq!(report.total_files_analyzed(), 2);
+        assert_eq!(report.total_files_skipped(), 1);
+
+        fs::remove_dir_all(dir_path).unwrap();
+    }
+}

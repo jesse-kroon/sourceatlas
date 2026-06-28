@@ -36,6 +36,18 @@ impl Report {
         self.total_files_skipped += 1
     }
 
+    pub fn total_files(&self) -> usize {
+        self.total_files_found
+    }
+
+    pub fn total_files_skipped(&self) -> usize {
+        self.total_files_skipped
+    }
+
+    pub fn total_files_analyzed(&self) -> usize {
+        self.total_files_analyzed
+    }
+
     pub fn generate(&mut self) {
         Self::default();
         self.total_files_analyzed = self.files.len();
