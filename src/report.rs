@@ -3,7 +3,7 @@ use crate::file_stats::FileStats;
 #[derive(Default)]
 pub struct Report {
     files: Vec<FileStats>,
-    total_directories: usize,
+    total_directories_found: usize,
     total_files_found: usize,
     total_files_analyzed: usize,
     total_files_skipped: usize,
@@ -25,7 +25,7 @@ impl Report {
     }
 
     pub fn record_directory_found(&mut self) {
-        self.total_directories += 1;
+        self.total_directories_found += 1;
     }
 
     pub fn record_file_found(&mut self) {
@@ -36,7 +36,7 @@ impl Report {
         self.total_files_skipped += 1
     }
 
-    pub fn total_files(&self) -> usize {
+    pub fn total_files_found(&self) -> usize {
         self.total_files_found
     }
 
@@ -46,6 +46,10 @@ impl Report {
 
     pub fn total_files_analyzed(&self) -> usize {
         self.total_files_analyzed
+    }
+
+    pub fn total_directories_found(&self) -> usize {
+        self.total_directories_found
     }
 
     pub fn generate(&mut self) {
@@ -70,7 +74,7 @@ impl Report {
 
         println!("DIRECTORIES");
         println!("--------");
-        println!("total directories: {}", self.total_directories);
+        println!("total directories: {}", self.total_directories_found);
         println!("");
 
         println!("FILES");

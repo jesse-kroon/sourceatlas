@@ -3,7 +3,7 @@
 - Ignore certain directories/files (.vscode, .idea, node_modules, target, build etc.)
 - Add tests
 - Write a README
-- Make report correct (also add skipped files/directories to report)
+- ~~Make report correct (also add skipped files/directories to report)~~
 
 ## Ideas
 - Determine file extension/language

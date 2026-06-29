@@ -15,6 +15,15 @@ use std::{
 
 use crate::command::Command;
 
+fn should_ignore_directory(path: &Path) -> bool {
+    let skippable_directories = vec![".idea"];
+    let Some(directory_name) = path.file_name().and_then(|name| name.to_str()) else {
+        return false;
+    };
+
+    skippable_directories.contains(&directory_name)
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -53,6 +62,10 @@ fn scan_directory(directory: &Path, report: &mut Report) {
 
         let path = entry.path();
         if path.is_dir() {
+            if should_ignore_directory(&path) {
+                continue;
+            }
+
             report.record_directory_found();
             scan_directory(&path, report);
             continue;
@@ -83,22 +96,19 @@ mod tests {
 
     #[test]
     fn binary_file_is_skipped_but_is_counted() {
-        let dir_path = "./tmp/";
-        let mut builder = DirBuilder::new();
-        builder.recursive(true).create(dir_path).unwrap();
-        fs::write(dir_path.to_owned() + "/image1.png", [0xFF, 0xD7, 0xFF]).unwrap();
-        fs::write(dir_path.to_owned() + "/image2.png", [0xFF, 0xD7, 0xFF]).unwrap();
-        fs::write(dir_path.to_owned() + "/image3.png", [0xFF, 0xD7, 0xFF]).unwrap();
+        let temp_dir = tempdir().unwrap();
+        let dir_path = temp_dir.path();
+        fs::write(dir_path.join("image1.png"), [0xFF, 0xD7, 0xFF]).unwrap();
+        fs::write(dir_path.join("image2.png"), [0xFF, 0xD7, 0xFF]).unwrap();
+        fs::write(dir_path.join("image3.png"), [0xFF, 0xD7, 0xFF]).unwrap();
 
         let mut report = Report::new();
         scan_directory(Path::new(dir_path), &mut report);
         report.generate();
 
-        assert_eq!(report.total_files(), 3);
+        assert_eq!(report.total_files_found(), 3);
         assert_eq!(report.total_files_skipped(), 3);
         assert_eq!(report.total_files_analyzed(), 0);
-
-        fs::remove_dir_all(dir_path).unwrap();
     }
 
     #[test]
@@ -117,10 +127,28 @@ mod tests {
         scan_directory(Path::new(dir_path), &mut report);
         report.generate();
 
-        assert_eq!(report.total_files(), 3);
+        assert_eq!(report.total_files_found(), 3);
         assert_eq!(report.total_files_analyzed(), 2);
         assert_eq!(report.total_files_skipped(), 1);
 
         fs::remove_dir_all(dir_path).unwrap();
+    }
+
+    #[test]
+    fn ignores_skippable_directories() {
+        let temp_dir = tempdir().unwrap();
+        let dir_path = temp_dir.path();
+
+        let fake_ide_dir = dir_path.join(".idea");
+        fs::create_dir(&fake_ide_dir).unwrap();
+
+        let lib_dir = dir_path.join("lib");
+        fs::create_dir(&lib_dir).unwrap();
+
+        let mut report = Report::new();
+        scan_directory(Path::new(dir_path), &mut report);
+        report.generate();
+
+        assert_eq!(report.total_directories_found(), 1);
     }
 }
