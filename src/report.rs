@@ -3,8 +3,8 @@ use crate::file_stats::FileStats;
 #[derive(Default)]
 pub struct Report {
     files: Vec<FileStats>,
-    total_directories_found: usize,
-    total_files_found: usize,
+    total_directories_scanned: usize,
+    total_files_scanned: usize,
     total_files_analyzed: usize,
     total_files_skipped: usize,
     total_lines: usize,
@@ -25,11 +25,11 @@ impl Report {
     }
 
     pub fn record_directory_found(&mut self) {
-        self.total_directories_found += 1;
+        self.total_directories_scanned += 1;
     }
 
     pub fn record_file_found(&mut self) {
-        self.total_files_found += 1;
+        self.total_files_scanned += 1;
     }
 
     pub fn record_skipped_file(&mut self) {
@@ -37,7 +37,7 @@ impl Report {
     }
 
     pub fn total_files_found(&self) -> usize {
-        self.total_files_found
+        self.total_files_scanned
     }
 
     pub fn total_files_skipped(&self) -> usize {
@@ -49,7 +49,7 @@ impl Report {
     }
 
     pub fn total_directories_found(&self) -> usize {
-        self.total_directories_found
+        self.total_directories_scanned
     }
 
     pub fn generate(&mut self) {
@@ -74,12 +74,12 @@ impl Report {
 
         println!("DIRECTORIES");
         println!("--------");
-        println!("total directories: {}", self.total_directories_found);
+        println!("total directories: {}", self.total_directories_scanned);
         println!("");
 
         println!("FILES");
         println!("--------");
-        println!("total files found: {}", self.total_files_found);
+        println!("total files found: {}", self.total_files_scanned);
         println!("total files analyzed: {}", self.total_files_analyzed);
         println!("total files skipped: {}", self.total_files_skipped);
         println!("total lines: {}", self.total_lines);

@@ -15,15 +15,6 @@ use std::{
 
 use crate::command::Command;
 
-fn should_ignore_directory(path: &Path) -> bool {
-    let skippable_directories = vec![".idea"];
-    let Some(directory_name) = path.file_name().and_then(|name| name.to_str()) else {
-        return false;
-    };
-
-    skippable_directories.contains(&directory_name)
-}
-
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -55,10 +46,13 @@ fn scan_directory(directory: &Path, report: &mut Report) {
     };
 
     for entry in entries {
-        let entry = entry.unwrap_or_else(|err| {
-            eprintln!("{err}");
-            process::exit(1);
-        });
+        let entry = match entry {
+            Ok(entry) => entry,
+            Err(err) => {
+                eprintln!("Skipping entry in {}: {err}", directory.display());
+                continue;
+            }
+        };
 
         let path = entry.path();
         if path.is_dir() {
@@ -83,10 +77,20 @@ fn scan_directory(directory: &Path, report: &mut Report) {
         }
     }
 }
+
+fn should_ignore_directory(path: &Path) -> bool {
+    let skippable_directories = vec![".idea", ".vscode", "build", "target", "node_modules"];
+    let Some(directory_name) = path.file_name().and_then(|name| name.to_str()) else {
+        return false;
+    };
+
+    skippable_directories.contains(&directory_name)
+}
+
 #[cfg(test)]
 mod tests {
     use std::{
-        fs::{self, DirBuilder},
+        fs::{self},
         path::Path,
     };
 
@@ -95,7 +99,7 @@ mod tests {
     use crate::{report::Report, scan_directory};
 
     #[test]
-    fn binary_file_is_skipped_but_is_counted() {
+    fn binary_files_are_skipped_but_counted() {
         let temp_dir = tempdir().unwrap();
         let dir_path = temp_dir.path();
         fs::write(dir_path.join("image1.png"), [0xFF, 0xD7, 0xFF]).unwrap();
@@ -139,8 +143,11 @@ mod tests {
         let temp_dir = tempdir().unwrap();
         let dir_path = temp_dir.path();
 
-        let fake_ide_dir = dir_path.join(".idea");
-        fs::create_dir(&fake_ide_dir).unwrap();
+        let test_directories = vec![".idea", ".vscode", "target", "build", "node_modules"];
+        for directory in test_directories {
+            let fake_ide_dir = dir_path.join(directory);
+            fs::create_dir(&fake_ide_dir).unwrap();
+        }
 
         let lib_dir = dir_path.join("lib");
         fs::create_dir(&lib_dir).unwrap();
