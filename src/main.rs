@@ -106,17 +106,20 @@ mod tests {
         let temp_dir = tempdir().unwrap();
         let dir_path = temp_dir.path();
 
+        let lib_dir = dir_path.join("lib");
+        fs::create_dir(&lib_dir).unwrap();
+
         fs::write(dir_path.join("main.rs"), "fn main() {}").unwrap();
         fs::write(dir_path.join("image1.png"), [0xFF, 0xDD, 0xFF]).unwrap();
-        fs::write(dir_path.join("image2.png"), [0xFF, 0xDD, 0xFF]).unwrap();
+        fs::write(lib_dir.join("main.rs"), "fn main() {}").unwrap();
 
         let mut report = Report::new();
         scan_directory(Path::new(dir_path), &mut report);
         report.generate();
 
         assert_eq!(report.total_files(), 3);
-        assert_eq!(report.total_files_analyzed(), 1);
-        assert_eq!(report.total_files_skipped(), 2);
+        assert_eq!(report.total_files_analyzed(), 2);
+        assert_eq!(report.total_files_skipped(), 1);
 
         fs::remove_dir_all(dir_path).unwrap();
     }
