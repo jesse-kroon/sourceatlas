@@ -25,7 +25,11 @@ fn main() {
             report.generate();
             report.print();
         }
-        Command::Help => println!("You won't get any help here"),
+        Command::Help => {
+            println!("Usage:");
+            println!("sourceatlas scan <directory>");
+            println!("sourceatlas help");
+        }
     }
 }
 
