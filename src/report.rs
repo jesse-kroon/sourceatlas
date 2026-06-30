@@ -53,7 +53,6 @@ impl Report {
     }
 
     pub fn generate(&mut self) {
-        Self::default();
         self.total_files_analyzed = self.files.len();
 
         for file in &self.files {
