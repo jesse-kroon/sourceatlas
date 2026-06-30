@@ -2,7 +2,7 @@
 name = "sourceatlas"
 version = "0.1.0"
 edition = "2024"
-description = "A small CLI app that generates a report on directories"
+description = "Analyze source code repositories and generate project statistics"
 license = "MIT"
 
 [dependencies]
