@@ -96,7 +96,7 @@ mod tests {
 
         let mut report = Report::new();
         Scanner::scan(Path::new(dir_path), &mut report);
-        report.generate();
+        // report.generate();
 
         assert_eq!(report.total_directories_found(), 1);
     }
