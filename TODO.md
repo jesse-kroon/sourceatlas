@@ -2,11 +2,15 @@
 
 - ~~Ignore certain directories/files (.vscode, .idea, node_modules, target, build etc.)~~
 - ~~Add tests~~
-- Write a README
+- ~~Write a README~~
 - ~~Make report correct (also add skipped files/directories to report)~~
 
-## Ideas
+# V0.1.1
+- Support more languages besides Rust
 - Determine file extension/language
+- Accept configuration for skippable files/directories
+
+## Ideas
 - Check if directory has version control with Git
 - Save report to file (use a flag)
 - Check directory size
