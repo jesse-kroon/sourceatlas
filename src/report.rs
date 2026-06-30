@@ -36,18 +36,22 @@ impl Report {
         self.total_files_skipped += 1
     }
 
+    #[cfg(test)]
     pub fn total_files_found(&self) -> usize {
         self.total_files_scanned
     }
 
+    #[cfg(test)]
     pub fn total_files_skipped(&self) -> usize {
         self.total_files_skipped
     }
 
+    #[cfg(test)]
     pub fn total_files_analyzed(&self) -> usize {
         self.total_files_analyzed
     }
 
+    #[cfg(test)]
     pub fn total_directories_found(&self) -> usize {
         self.total_directories_scanned
     }
