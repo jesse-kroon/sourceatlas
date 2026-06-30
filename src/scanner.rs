@@ -6,8 +6,6 @@ pub struct Scanner {}
 
 impl Scanner {
     pub fn scan(directory: &Path, report: &mut Report) {
-        println!("Scanning {}", directory.display());
-
         let entries = match fs::read_dir(directory) {
             Ok(entries) => entries,
             Err(err) => {
