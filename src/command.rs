@@ -10,15 +10,15 @@ impl Command {
             return Err(String::from(
                 "No command provided.\n\
                  Usage:\n\
-                 repolens scan <directory>\n\
-                 repolens help",
+                 sourceatlas scan <directory>\n\
+                 sourceatlas help",
             ));
         };
 
         match command.as_str() {
             "scan" => {
                 if args.len() != 3 {
-                    return Err(String::from("Usage: repolens scan <directory>"));
+                    return Err(String::from("Usage: sourceatlas scan <directory>"));
                 }
 
                 Ok(Self::Scan {
@@ -27,12 +27,12 @@ impl Command {
             }
             "help" => {
                 if args.len() != 2 {
-                    return Err(String::from("Usage: repolens help"));
+                    return Err(String::from("Usage: sourceatlas help"));
                 }
                 Ok(Self::Help)
             }
             unknown => Err(format!(
-                "Unknown command: {unknown}. Use \"repolens help\" to see available commands"
+                "Unknown command: {unknown}. Use \"sourceatlas help\" to see available commands"
             )),
         }
     }

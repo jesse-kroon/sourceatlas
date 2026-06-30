@@ -68,7 +68,7 @@ impl Report {
 
     pub fn print(&self) {
         println!("----------");
-        println!("|REPOLENS|");
+        println!("|sourceatlas|");
         println!("----------");
         println!("");
 
