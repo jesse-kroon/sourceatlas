@@ -1,5 +1,5 @@
 [package]
-name = "repolens"
+name = "sourceatlas"
 version = "0.1.0"
 edition = "2024"
 description = "A small CLI app that generates a report on directories"
