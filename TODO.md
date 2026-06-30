@@ -5,7 +5,7 @@
 - ~~Write a README~~
 - ~~Make report correct (also add skipped files/directories to report)~~
 
-# V0.1.1
+# V0.2
 - Support more languages besides Rust
 - Determine file extension/language
 - Accept configuration for skippable files/directories
