@@ -79,7 +79,7 @@ fn scan_directory(directory: &Path, report: &mut Report) {
 }
 
 fn should_ignore_directory(path: &Path) -> bool {
-    let skippable_directories = vec![".idea", ".vscode", "build", "target", "node_modules"];
+    let skippable_directories = [".idea", ".vscode", "build", "target", "node_modules"];
     let Some(directory_name) = path.file_name().and_then(|name| name.to_str()) else {
         return false;
     };
