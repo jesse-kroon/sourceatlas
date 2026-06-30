@@ -98,10 +98,6 @@ Some features I'd like to add:
 - Parallel directory scanning
 - Additional repository metrics
 
-## Why SourceAtlas?
-
-The idea behind the name is simple: rather than just counting lines of code, SourceAtlas aims to provide an overview of a source tree—almost like a map of a repository.
-
 ## License
 
 This project is licensed under the MIT License.
