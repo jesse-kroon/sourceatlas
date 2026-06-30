@@ -54,6 +54,12 @@ impl Report {
 
     pub fn generate(&mut self) {
         self.total_files_analyzed = self.files.len();
+        self.total_lines = 0;
+        self.total_characters = 0;
+        self.total_blank_lines = 0;
+        self.total_non_blank_lines = 0;
+        self.total_functions = 0;
+        self.total_todos = 0;
 
         for file in &self.files {
             self.total_lines += file.total_lines;

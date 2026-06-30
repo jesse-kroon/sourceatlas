@@ -6,7 +6,6 @@ description = "Analyze source code repositories and generate project statistics"
 license = "MIT"
 
 [dependencies]
-tempfile = "3.27.0"
 
 [dev-dependencies]
 tempfile = "3.27.0"
