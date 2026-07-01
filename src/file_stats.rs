@@ -48,9 +48,6 @@ fn count_file_functions(parser: &dyn LanguageParser, source: &str) -> usize {
         .count()
 }
 
-// TODO: This function doesn't work as intended yet as it takes all occurences of the word todo
-// This should be language-based and checked for leading # or // or whatever signals a comment
-// in a given language
 fn count_file_todos(parser: &dyn LanguageParser, source: &str) -> usize {
     source.lines().filter(|line| parser.is_todo(line)).count()
 }

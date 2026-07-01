@@ -7,7 +7,8 @@
 
 # V0.2
 - Support more languages besides Rust
-- Determine file extension/language
+- Show languages used in report
+- ~~Determine file extension/language~~
 - Accept configuration for skippable files/directories
 
 ## Ideas
