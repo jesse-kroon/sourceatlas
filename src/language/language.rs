@@ -14,9 +14,9 @@ impl Language {
         }
     }
 
-    pub fn parser(&self) -> Box<dyn LanguageParser> {
+    pub fn parser(&self) -> &dyn LanguageParser {
         match self {
-            Language::Rust => Box::new(RustParser),
+            Language::Rust => &RustParser,
         }
     }
 }

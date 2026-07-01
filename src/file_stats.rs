@@ -83,13 +83,13 @@ mod tests {
     fn counts_todos() {
         let parser = Language::Rust.parser();
 
-        assert_eq!(1, count_file_todos(parser.as_ref(), TEST_SOURCE));
+        assert_eq!(1, count_file_todos(parser, TEST_SOURCE));
     }
 
     #[test]
     fn counts_functions() {
         let parser = Language::Rust.parser();
 
-        assert_eq!(1, count_file_functions(parser.as_ref(), TEST_SOURCE));
+        assert_eq!(1, count_file_functions(parser, TEST_SOURCE));
     }
 }

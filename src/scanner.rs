@@ -44,7 +44,7 @@ impl Scanner {
                         };
 
                         let parser = language.parser();
-                        report.add_file(FileStats::new(&source, parser.as_ref()));
+                        report.add_file(FileStats::new(&source, parser));
                     }
                     Err(_) => {
                         report.record_skipped_file();
