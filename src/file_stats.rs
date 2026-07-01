@@ -1,3 +1,5 @@
+use crate::language::parser::LanguageParser;
+
 pub struct FileStats {
     pub(crate) total_lines: usize,
     pub(crate) total_characters: usize,
@@ -8,14 +10,14 @@ pub struct FileStats {
 }
 
 impl FileStats {
-    pub fn new(source: &str) -> Self {
+    pub fn new(source: &str, parser: &dyn LanguageParser) -> Self {
         Self {
             total_lines: count_file_lines(source),
             total_characters: count_file_non_whitespace_characters(source),
             total_blank_lines: count_file_blank_lines(source),
             total_non_blank_lines: count_file_non_blank_lines(source),
-            total_functions: count_file_functions(source),
-            total_todos: count_file_todos(source),
+            total_functions: count_file_functions(parser, source),
+            total_todos: count_file_todos(parser, source),
         }
     }
 }
@@ -39,22 +41,21 @@ fn count_file_blank_lines(source: &str) -> usize {
     source.lines().filter(|line| line.trim().is_empty()).count()
 }
 
-fn count_file_functions(source: &str) -> usize {
+fn count_file_functions(parser: &dyn LanguageParser, source: &str) -> usize {
     source
         .lines()
-        .filter(|line| {
-            let line = line.trim_start();
-            line.starts_with("fn")
-        })
+        .filter(|line| parser.is_function(line))
         .count()
 }
 
-fn count_file_todos(source: &str) -> usize {
-    source.to_ascii_lowercase().matches("todo").count()
+fn count_file_todos(parser: &dyn LanguageParser, source: &str) -> usize {
+    source.lines().filter(|line| parser.is_todo(line)).count()
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::language::language::Language;
+
     use super::*;
 
     const TEST_SOURCE: &str = r#"fn main() {
@@ -80,11 +81,15 @@ mod tests {
 
     #[test]
     fn counts_todos() {
-        assert_eq!(1, count_file_todos(TEST_SOURCE))
+        let parser = Language::Rust.parser();
+
+        assert_eq!(1, count_file_todos(parser, TEST_SOURCE));
     }
 
     #[test]
     fn counts_functions() {
-        assert_eq!(1, count_file_functions(TEST_SOURCE))
+        let parser = Language::Rust.parser();
+
+        assert_eq!(1, count_file_functions(parser, TEST_SOURCE));
     }
 }

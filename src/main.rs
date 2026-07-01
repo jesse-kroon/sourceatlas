@@ -1,6 +1,7 @@
 mod command;
 mod config;
 mod file_stats;
+mod language;
 mod report;
 mod scanner;
 
