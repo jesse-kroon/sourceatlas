@@ -1,6 +1,6 @@
 use std::{fs, path::Path};
 
-use crate::{file_stats::FileStats, report::Report};
+use crate::{file_stats::FileStats, language::language::Language, report::Report};
 
 pub struct Scanner {}
 
@@ -37,7 +37,15 @@ impl Scanner {
             if path.is_file() {
                 report.record_file_found();
                 match fs::read_to_string(&path) {
-                    Ok(source) => report.add_file(FileStats::new(&source)),
+                    Ok(source) => {
+                        let Some(language) = Language::from_path(&path) else {
+                            report.record_skipped_file();
+                            continue;
+                        };
+
+                        let parser = language.parser();
+                        report.add_file(FileStats::new(&source, parser.as_ref()));
+                    }
                     Err(_) => {
                         report.record_skipped_file();
                         continue;
