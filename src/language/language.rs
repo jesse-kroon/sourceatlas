@@ -1,7 +1,8 @@
-use std::path::Path;
+use std::{fmt, path::Path};
 
 use crate::language::{parser::LanguageParser, rust::RustParser};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Language {
     Rust,
 }
@@ -17,6 +18,14 @@ impl Language {
     pub fn parser(&self) -> &dyn LanguageParser {
         match self {
             Language::Rust => &RustParser,
+        }
+    }
+}
+
+impl fmt::Display for Language {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Language::Rust => write!(f, "Rust"),
         }
     }
 }

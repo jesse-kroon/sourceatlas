@@ -44,6 +44,7 @@ impl Scanner {
                         };
 
                         let parser = language.parser();
+                        report.record_language_used(language);
                         report.add_file(FileStats::new(&source, parser));
                     }
                     Err(_) => {

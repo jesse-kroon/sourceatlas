@@ -1,8 +1,11 @@
-use crate::file_stats::FileStats;
+use std::collections::HashMap;
+
+use crate::{file_stats::FileStats, language::language::Language};
 
 #[derive(Default)]
 pub struct Report {
     files: Vec<FileStats>,
+    languages_used: HashMap<Language, usize>,
     total_directories_scanned: usize,
     total_files_scanned: usize,
     total_files_analyzed: usize,
@@ -22,6 +25,10 @@ impl Report {
 
     pub fn add_file(&mut self, file: FileStats) {
         self.files.push(file);
+    }
+
+    pub fn record_language_used(&mut self, language: Language) {
+        *self.languages_used.entry(language).or_insert(0) += 1
     }
 
     pub fn record_directory_found(&mut self) {
@@ -79,6 +86,11 @@ impl Report {
         println!("----------");
         println!("|SourceAtlas|");
         println!("----------");
+        println!("");
+        println!("Languages used:");
+        for (language, amount) in &self.languages_used {
+            println!("{}: {} files", language.to_string(), amount);
+        }
         println!("");
 
         println!("DIRECTORIES");
