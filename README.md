@@ -63,24 +63,37 @@ sourceatlas scan /path/to/project
 
 ```text
 ----------
-|sourceatlas|
+|SourceAtlas|
 ----------
+
+Languages used:
+Rust: 10 files
+
+Language stats
+Rust:
+ - Files: 10
+ - Lines: 562
+ - Blank lines: 90
+ - Non-blank lines: 472
+ - Characters: 11153
+ - Functions: 24
+ - TODOs: 2
 
 DIRECTORIES
 --------
-total directories: 55
+total directories: 105
 
 FILES
 --------
-total files found: 86
-total files analyzed: 43
-total files skipped: 43
-total lines: 1607
-total characters: 40438
-total non-blank lines: 1372
-total blank lines: 235
-total functions: 16
-total TODO's: 26
+total files found: 160
+total files analyzed: 10
+total files skipped: 150
+total lines: 562
+total characters: 11153
+total non-blank lines: 472
+total blank lines: 90
+total functions: 24
+total TODO's: 2
 ```
 
 *The above output is generated when running sourceatlas on itself*
