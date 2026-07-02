@@ -1,11 +1,10 @@
 use std::collections::HashMap;
 
-use crate::{file_stats::FileStats, language::language::Language};
+use crate::{file_stats::FileStats, language::Language};
 
 #[derive(Default)]
 pub struct Report {
-    files: Vec<FileStats>,
-    languages_used: HashMap<Language, usize>,
+    files: Vec<FileReport>,
     total_directories_scanned: usize,
     total_files_scanned: usize,
     total_files_analyzed: usize,
@@ -23,12 +22,9 @@ impl Report {
         Self::default()
     }
 
-    pub fn add_file(&mut self, file: FileStats) {
+    pub fn add_file(&mut self, file: FileReport) {
         self.files.push(file);
-    }
-
-    pub fn record_language_used(&mut self, language: Language) {
-        *self.languages_used.entry(language).or_insert(0) += 1
+        self.total_files_analyzed += 1;
     }
 
     pub fn record_directory_found(&mut self) {
@@ -41,6 +37,23 @@ impl Report {
 
     pub fn record_skipped_file(&mut self) {
         self.total_files_skipped += 1
+    }
+
+    pub fn language_totals(&self) -> HashMap<Language, LanguageTotals> {
+        let mut totals = HashMap::new();
+        for file_report in &self.files {
+            let entry = totals
+                .entry(file_report.language)
+                .or_insert(LanguageTotals::default());
+            entry.files += 1;
+            entry.lines += file_report.stats.total_lines;
+            entry.blank_lines += file_report.stats.total_blank_lines;
+            entry.non_blank_lines += file_report.stats.total_non_blank_lines;
+            entry.characters += file_report.stats.total_characters;
+            entry.functions += file_report.stats.total_functions;
+            entry.todos += file_report.stats.total_todos;
+        }
+        totals
     }
 
     #[cfg(test)]
@@ -73,31 +86,50 @@ impl Report {
         self.total_todos = 0;
 
         for file in &self.files {
-            self.total_lines += file.total_lines;
-            self.total_characters += file.total_characters;
-            self.total_blank_lines += file.total_blank_lines;
-            self.total_non_blank_lines += file.total_non_blank_lines;
-            self.total_functions += file.total_functions;
-            self.total_todos += file.total_todos;
+            self.total_lines += file.stats.total_lines;
+            self.total_characters += file.stats.total_characters;
+            self.total_blank_lines += file.stats.total_blank_lines;
+            self.total_non_blank_lines += file.stats.total_non_blank_lines;
+            self.total_functions += file.stats.total_functions;
+            self.total_todos += file.stats.total_todos;
         }
     }
 
     pub fn print(&self) {
+        let mut languages = HashMap::new();
+        for file in &self.files {
+            *languages.entry(file.language).or_insert(0) += 1;
+        }
+
         println!("----------");
         println!("|SourceAtlas|");
         println!("----------");
         println!("");
         println!("Languages used:");
-        for (language, amount) in &self.languages_used {
-            println!("{}: {} files", language.to_string(), amount);
+        for (language, count) in languages {
+            println!("{language}: {count} files");
         }
         println!("");
+
+        println!("Language stats");
+        let language_totals = self.language_totals();
+        for (language, totals) in language_totals {
+            println!("{}:", language);
+            println!(" - Files: {}", totals.files);
+            println!(" - Lines: {}", totals.lines);
+            println!(" - Blank lines: {}", totals.blank_lines);
+            println!(" - Non-blank lines: {}", totals.non_blank_lines);
+            println!(" - Characters: {}", totals.characters);
+            println!(" - Functions: {}", totals.functions);
+            println!(" - TODOs: {}\n", totals.todos);
+        }
 
         println!("DIRECTORIES");
         println!("--------");
         println!("total directories: {}", self.total_directories_scanned);
         println!("");
 
+        // TODO: Decided if I can remove these in the future
         println!("FILES");
         println!("--------");
         println!("total files found: {}", self.total_files_scanned);
@@ -109,5 +141,40 @@ impl Report {
         println!("total blank lines: {}", self.total_blank_lines);
         println!("total functions: {}", self.total_functions);
         println!("total TODO's: {}", self.total_todos);
+    }
+}
+
+pub struct FileReport {
+    language: Language,
+    stats: FileStats,
+}
+
+impl FileReport {
+    pub fn new(language: Language, stats: FileStats) -> Self {
+        Self { language, stats }
+    }
+}
+
+pub struct LanguageTotals {
+    pub files: usize,
+    pub lines: usize,
+    pub blank_lines: usize,
+    pub non_blank_lines: usize,
+    pub characters: usize,
+    pub functions: usize,
+    pub todos: usize,
+}
+
+impl Default for LanguageTotals {
+    fn default() -> Self {
+        Self {
+            files: 0,
+            lines: 0,
+            blank_lines: 0,
+            non_blank_lines: 0,
+            characters: 0,
+            functions: 0,
+            todos: 0,
+        }
     }
 }

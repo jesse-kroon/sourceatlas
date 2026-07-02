@@ -1,6 +1,10 @@
 use std::{fs, path::Path};
 
-use crate::{file_stats::FileStats, language::language::Language, report::Report};
+use crate::{
+    file_stats::FileStats,
+    language::Language,
+    report::{FileReport, Report},
+};
 
 pub struct Scanner {}
 
@@ -44,8 +48,8 @@ impl Scanner {
                         };
 
                         let parser = language.parser();
-                        report.record_language_used(language);
-                        report.add_file(FileStats::new(&source, parser));
+                        let stats = FileStats::new(&source, parser);
+                        report.add_file(FileReport::new(language, stats));
                     }
                     Err(_) => {
                         report.record_skipped_file();

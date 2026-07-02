@@ -54,7 +54,7 @@ fn count_file_todos(parser: &dyn LanguageParser, source: &str) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use crate::language::language::Language;
+    use crate::language::Language;
 
     use super::*;
 
